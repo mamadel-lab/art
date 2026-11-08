@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mamadel Art | Juguetes Artesanales de Algodón y Muñecas de Colección</title>
+    
+    <!-- Luxury Vector SVG Favicon -->
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='32' fill='%23170f0c'/%3E%3Ccircle cx='32' cy='32' r='28' fill='none' stroke='%23d4af37' stroke-width='2'/%3E%3Ccircle cx='32' cy='32' r='24' fill='none' stroke='%23d4af37' stroke-width='0.75' stroke-dasharray='3 2'/%3E%3Ctext x='32' y='43' font-family='Georgia, serif' font-size='32' font-weight='bold' fill='%23d4af37' text-anchor='middle'%3EM%3C/text%3E%3C/svg%3E">
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,400&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            base: '#170f0c',
+                            dark: '#1f1511',
+                            brown: '#2a1c16',
+                            card: '#241712',
+                            gold: '#d4af37',
+                            gold_light: '#f3e5ab',
+                            gold_hover: '#e5be49',
+                            ivory: '#FAF7F2'
+                        }
+                    },
+                    fontFamily: {
+                        serif: ['"Cormorant Garamond"', 'serif'],
+                        sans: ['"Inter"', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        html {
+            scroll-behavior: smooth;
+        }
+        body {
+            background-color: #170f0c;
+            background-image: 
+                radial-gradient(circle at 50% 0%, #2f1e16 0%, transparent 70%),
+                radial-gradient(circle at 80% 80%, #251610 0%, transparent 60%);
+            color: #FAF7F2;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        #particle-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+            pointer-events: none;
+        }
+
+        .content-layer {
+            position: relative;
+            z-index: 10;
+        }
+
+        .stand-subtitle {
+            text-shadow: 0 3px 12px rgba(0, 0, 0, 0.95), 0 1px 4px rgba(0, 0, 0, 0.9);
+            letter-spacing: 0.01em;
+        }
+
+        .price-badge-glow {
+            box-shadow: 0 0 18px rgba(212, 175, 55, 0.28), inset 0 0 10px rgba(212, 175, 55, 0.12);
+        }
+
+        .art-card {
+            background: linear-gradient(145deg, rgba(38, 25, 20, 0.96), rgba(27, 18, 14, 0.98));
+            border: 1px solid rgba(212, 175, 55, 0.3);
+            transition: transform 0.35s ease, border-color 0.35s ease, box-shadow 0.35s ease;
+        }
+        .art-card:hover {
+            border-color: rgba(212, 175, 55, 0.8);
+            transform: translateY(-5px);
+            box-shadow: 0 18px 34px -10px rgba(0, 0, 0, 0.85), 0 0 22px rgba(212, 175, 55, 0.2);
+        }
+
+        .card-top-overlay {
+            background: linear-gradient(
+                to bottom,
+                rgba(18, 11, 8, 0.94) 0%,
+                rgba(18, 11, 8, 0.78) 58%,
+                rgba(18, 11, 8, 0.35) 82%,
+                transparent 100%
+            );
+        }
+
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #170f0c;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #3b281f;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #d4af37;
+        }
+    </style>
+</head>
+<body class="font-sans antialiased text-[#FAF7F2] selection:bg-brand-gold selection:text-brand-base">
+
+    <!-- Парящая золотая пыль на фоне -->
+    <canvas id="particle-canvas"></canvas>
+
+    <!-- Всплывающее уведомление -->
+    <div id="toast-notice" class="fixed bottom-5 right-5 z-[120] bg-brand-card border border-brand-gold text-brand-gold px-4 py-2.5 rounded-xl shadow-2xl text-xs font-semibold hidden transition-all"></div>
+
+    <div class="content-layer min-h-screen flex flex-col">
+
+        <!-- Шапка сайта (Header) -->
+        <header class="w-full border-b border-brand-gold/20 backdrop-blur-md bg-brand-base/90 sticky top-0 z-40 transition-all">
+            <div class="max-w-7xl mx-auto px-2.5 sm:px-6 py-2.5 sm:py-3 flex flex-wrap sm:flex-nowrap justify-between items-center gap-2">
+                
+                <!-- Логотип ART logo.png + Имя автора -->
+                <a href="#" class="flex items-center gap-2 sm:gap-3 select-none group shrink-0">
+                    <div class="w-10 h-10 sm:w-12 sm:h-12 rounded-full flex items-center justify-center bg-brand-brown/40 p-0.5 shadow-md group-hover:scale-105 transition-all overflow-hidden shrink-0">
+                        <img src="ART logo.png" alt="Mamadel Art Logo" class="w-full h-full object-contain logo-img" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+                        <svg class="hidden w-full h-full" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+                            <defs>
+                                <path id="topArcH" d="M 32,100 A 68,68 0 1,1 168,100" />
+                                <path id="botArcH" d="M 168,100 A 68,68 0 1,1 32,100" />
+                            </defs>
+                            <circle cx="100" cy="100" r="95" fill="none" stroke="#c89d28" stroke-width="3.5"/>
+                            <circle cx="100" cy="100" r="88" fill="none" stroke="#c89d28" stroke-width="2"/>
+                            <circle cx="100" cy="100" r="61" fill="none" stroke="#c89d28" stroke-width="3"/>
+                            <path d="M100 54 C84 54 74 66 77 78 C63 75 53 88 59 103 C53 114 63 127 77 125 C87 132 95 140 100 147 C105 140 113 132 123 125 C137 127 147 114 141 103 C147 88 137 75 123 78 C126 66 116 54 100 54 Z" fill="none" stroke="#c89d28" stroke-width="2.5"/>
+                            <text x="100" y="118" font-family="Georgia, serif" font-size="54" font-weight="bold" fill="#c89d28" text-anchor="middle">M</text>
+                            <text font-family="Georgia, serif" font-size="17" font-weight="bold" fill="#c89d28" letter-spacing="4">
+                                <textPath href="#topArcH" startOffset="50%" text-anchor="middle">MAMADEL</textPath>
+                            </text>
+                            <text font-family="Georgia, serif" font-size="16" font-weight="bold" fill="#c89d28" letter-spacing="5">
+                                <textPath href="#botArcH" startOffset="50%" text-anchor="middle">• ART •</textPath>
+                            </text>
+                        </svg>
+                    </div>
+                    <div class="leading-tight">
+                        <div class="font-serif text-sm sm:text-xl font-bold tracking-wider text-brand-gold uppercase">
+                            <span class="lang-text" data-es="Tatiana Adelman" data-en="Tatiana Adelman" data-ru="Татьяна Адельман">Tatiana Adelman</span>
+                        </div>
+                        <div class="text-[8px] sm:text-[10px] uppercase tracking-widest text-brand-gold_light/75 font-medium">
+                            <span class="lang-text" data-es="Autora • Escultura en Algodón" data-en="Artist • Spun-Cotton Art" data-ru="Авторская мастерская">Autora • Escultura en Algodón</span>
+                        </div>
+                    </div>
+                </a>
+
+                <!-- Правая часть шапки -->
+                <div class="flex items-center gap-1.5 sm:gap-2.5 ml-auto">
+                    <a href="#gallery" class="flex items-center gap-1 sm:gap-2 px-2 sm:px-3.5 py-1 sm:py-1.5 rounded-full bg-gradient-to-r from-brand-brown via-brand-card to-brand-brown border border-brand-gold/80 price-badge-glow hover:border-brand-gold transition-all shrink-0">
+                        <span class="text-brand-gold text-[10px] sm:text-xs animate-pulse">✦</span>
+                        <div class="text-left leading-none sm:leading-tight">
+                            <div class="hidden md:block text-[8px] uppercase tracking-widest text-brand-gold_light/90 font-medium lang-text"
+                                 data-es="Valor de las piezas" data-en="Piece value" data-ru="Ценность игрушек">Valor de las piezas</div>
+                            <div class="text-[11px] sm:text-sm font-serif font-bold text-brand-gold tracking-wide whitespace-nowrap">25€ – 45€</div>
+                        </div>
+                    </a>
+
+                    <!-- Переключатель языков -->
+                    <div class="inline-flex rounded-lg p-0.5 bg-brand-dark border border-brand-gold/30 shadow-inner shrink-0">
+                        <button onclick="setLang('es')" id="btn-es" class="px-1.5 sm:px-2.5 py-1 text-[10px] sm:text-xs font-semibold rounded transition-all text-brand-gold bg-brand-brown shadow-sm">ES</button>
+                        <button onclick="setLang('en')" id="btn-en" class="px-1.5 sm:px-2.5 py-1 text-[10px] sm:text-xs font-semibold rounded transition-all text-white/70 hover:text-brand-gold">EN</button>
+                        <button onclick="setLang('ru')" id="btn-ru" class="px-1.5 sm:px-2.5 py-1 text-[10px] sm:text-xs font-semibold rounded transition-all text-white/70 hover:text-brand-gold">RU</button>
+                    </div>
+
+                    <!-- Кнопка КОНТАКТЫ -->
+                    <button onclick="toggleSideDrawer(true)" aria-label="Contacto" class="inline-flex items-center justify-center gap-1.5 px-2.5 sm:px-4 py-1.5 sm:py-2 rounded-xl bg-brand-dark hover:bg-brand-brown border border-brand-gold/50 text-brand-gold transition-all shadow-md shrink-0">
+                        <svg class="w-3.5 h-3.5 sm:w-4 sm:h-4 text-brand-gold shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"></path>
+                        </svg>
+                        <span class="text-[10px] sm:text-xs font-semibold uppercase tracking-wider lang-text" data-es="Contacto" data-en="Contact" data-ru="Контакты">Contacto</span>
+                    </button>
+                </div>
+            </div>
+        </header>
+
+        <!-- Выдвижная панель КОНТАКТЫ -->
+        <div id="side-drawer-backdrop" onclick="toggleSideDrawer(false)" class="fixed inset-0 z-50 bg-black/75 backdrop-blur-sm hidden opacity-0 transition-opacity duration-300"></div>
+        <aside id="side-drawer" class="fixed top-0 right-0 z-50 h-full w-80 max-w-[88vw] bg-brand-card border-l border-brand-gold/30 shadow-2xl transform translate-x-full transition-transform duration-300 flex flex-col justify-between p-6 overflow-y-auto">
+            <div>
+                <div class="flex items-center justify-between border-b border-brand-gold/20 pb-4 mb-5">
+                    <div class="flex items-center gap-2.5">
+                        <img src="ART logo.png" alt="Mamadel Art" class="w-9 h-9 object-contain logo-img" onerror="this.style.display='none'">
+                        <span class="font-serif text-lg font-bold text-brand-gold tracking-wider uppercase lang-text" data-es="Contacto & Redes" data-en="Contact & Socials" data-ru="Контакты и соцсети">Contacto & Redes</span>
+                    </div>
+                    <button onclick="toggleSideDrawer(false)" class="text-brand-gold hover:text-white text-2xl leading-none px-1">✕</button>
+                </div>
+
+                <p class="text-xs text-[#FAF7F2]/80 font-light leading-relaxed mb-5">
+                    <span class="lang-text" 
+                          data-es="Estamos en España (Alicante). Escríbenos por WhatsApp para encargos o síguenos en nuestras redes oficiales para ver fotos reales y Reels." 
+                          data-en="Based in Spain (Alicante). Message us on WhatsApp for inquiries or visit our official social pages for live photos and Reels." 
+                          data-ru="Мы находимся в Испании (Аликанте). Пишите в WhatsApp для заказа или переходите в наши соцсети, чтобы увидеть живые фото и Reels.">
+                          Estamos en España (Alicante). Escríbenos por WhatsApp para encargos o síguenos en nuestras redes oficiales para ver fotos reales y Reels.
+                    </span>
+                </p>
+
+                <div class="mb-6">
+                    <div class="text-[11px] font-semibold uppercase tracking-widest text-brand-gold/80 mb-3 px-1">
+                        <span class="lang-text" data-es="Canales Oficiales" data-en="Official Channels" data-ru="Прямая связь">Canales Oficiales</span>
+                    </div>
+                    <div class="space-y-3">
+                        <a href="https://wa.me/34671587761?text=Hola,%20me%20gustar%C3%ADa%20informaci%C3%B3n%20sobre%20las%20mu%C3%B1ecas%20Mamadel%20Art" target="_blank" rel="noopener noreferrer" class="flex items-center gap-3.5 p-3.5 rounded-xl bg-[#25D366]/15 hover:bg-[#25D366]/25 border border-[#25D366]/40 text-[#25D366] transition-all">
+                            <svg class="w-6 h-6 fill-current shrink-0" viewBox="0 0 24 24"><path d="M12.031 0C5.492 0 .197 5.29.197 11.826c0 2.091.545 4.135 1.583 5.928L0 24l6.452-1.693c1.722.955 3.69 1.458 5.717 1.458 6.536 0 11.832-5.295 11.832-11.827C24.001 5.29 18.567 0 12.031 0zm0 21.656c-1.782 0-3.528-.48-5.06-1.389l-.36-.214-3.763.987.998-3.666-.235-.374c-1-1.593-1.528-3.433-1.528-5.342 0-5.385 4.38-9.766 9.766-9.766 5.384 0 9.764 4.381 9.764 9.766 0 5.387-4.38 9.768-9.764 9.768z"/></svg>
+                            <div class="text-left">
+                                <div class="text-xs font-bold">WhatsApp (España)</div>
+                                <div class="text-xs text-[#FAF7F2]/90">+34 671 58 77 61</div>
+                            </div>
+                        </a>
+
+                        <a href="https://www.facebook.com/profile.php?id=61595882687478" target="_blank" rel="noopener noreferrer" class="flex items-center gap-3.5 p-3.5 rounded-xl bg-[#1877F2]/15 hover:bg-[#1877F2]/25 border border-[#1877F2]/40 text-[#1877F2] transition-all">
+                            <svg class="w-6 h-6 fill-current shrink-0" viewBox="0 0 24 24"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.469h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.469h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
+                            <div class="text-left">
+                                <div class="text-xs font-bold">Facebook</div>
+                                <div class="text-[11px] text-[#FAF7F2]/80">Mamadel Art (Fotos & Reels)</div>
+                            </div>
+                        </a>
+
+                        <a href="https://www.instagram.com/adelman.tatiana/" target="_blank" rel="noopener noreferrer" class="flex items-center gap-3.5 p-3.5 rounded-xl bg-[#E1306C]/15 hover:bg-[#E1306C]/25 border border-[#E1306C]/40 text-[#E1306C] transition-all">
+                            <svg class="w-6 h-6 fill-current shrink-0" viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.
